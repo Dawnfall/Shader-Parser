@@ -1,36 +1,19 @@
 #pragma once
 
+#include "Token.h"
+
 #include <string>
 #include <vector>
-#include <sstream>
-#include "ParserConstants.h"
+//#include <sstream>
+#include "Core.h"
+#include <cctype>
+//#include "ParserConstants.h"
+#include "Group.h"
+#include <expected>
 
-namespace Twisted
+namespace spars
 {
-	enum class TokenType
-	{
-		NUMBER, // 0 - 9
-		IDENTIFIER, // a-z, A-Z , _
-		OPERATOR, // + - * / % = += -= *= /= %= == != < > <= >= && || ! & | ^ ~ << >> ++ -- ?
-		HASHTAG,
-		FUNCTION_BRACKET_OPEN,
-		FUNCTION_BRACKET_CLOSED,
-		SCOPE_BRACKET_OPEN,
-		SCOPE_BRACKET_CLOSED,
-		ACCESS_BRACKET_OPEN,
-		ACCESS_BRACKET_CLOSED,
-		SEMICOLON, // ;
-		COMMA, // ,
-		DOT, // .
-		COLON, // :
-		EMPTY
-	};
-
-	struct Token
-	{
-		TokenType Type;
-		std::string Str;
-	};
+	using GroupResult = std::expected<Group, bool>;
 
 	enum class COMMENT_REMOVE_MODE
 	{
@@ -38,20 +21,34 @@ namespace Twisted
 		LINE_COMMENT,
 		MULTI_LINE_COMMENT
 	};
-	class ShaderParser
+
+	class SPARS_API ShaderParser
 	{
 	public:
 
 		std::string RemoveComments(const std::string& str)const;
 
-		std::vector<Token> Tokenize(const std::string& str);
+		std::vector<Token> Tokenize(const std::string& str)const;
+
+		//std::expected<bool,std::vector<Group>> DetectGroups(const std::vector<Token>& tokens)const;
+
+	private:
+		std::vector<Token> RemoveEmpty(const std::vector<Token>& tokens)
+		{
+			std::vector<Token> filteredResult;
+			for (const auto& token : tokens)
+				if (token.Type != TokenType::EMPTY)
+					filteredResult.emplace_back(token);
+			return filteredResult;
+		}
+
+		GroupResult HandleHashTag(const std::vector<Token>& tokens, size_t i)const;
+
 		//std::string ReplaceUseLine(const std::string& input)
 		//{
 		//	size_t startPos = detectWord(Constants::SHADER_USE_KEYWORD, input, 0);
 		//	if (startPos == std::string::npos)
 		//		return input;
-
-
 
 		//	while (std::getline(ss, line))
 		//	{

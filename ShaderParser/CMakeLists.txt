@@ -7,30 +7,35 @@ file(GLOB_RECURSE SHADER_PARSER_SOURCES CONFIGURE_DEPENDS
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SHADER_PARSER_SOURCES})
 
+# Create shared library
 add_library(ShaderParser SHARED ${SHADER_PARSER_SOURCES})
 
+# Set C++ standard
 set_target_properties(ShaderParser PROPERTIES
     CXX_STANDARD 23
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 
-    OUTPUT_NAME "ShaderParser$<$<CONFIG:Debug>:_d>"
+    # Force DLL and import library into a predictable folder
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
 )
 
-target_include_directories(ShaderParser PUBLIC 
+# Include directories
+target_include_directories(ShaderParser PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+# Compile definitions
 target_compile_definitions(ShaderParser PRIVATE
-    TWISTED_ENGINE
-    $<$<CONFIG:Debug>:TWISTED_DEBUG>
-    $<$<CONFIG:Release>:TWISTED_RELEASE>
-    $<$<CONFIG:Deploy>:TWISTED_DEPLOY>
+    SHADER_PARSER
+    $<$<CONFIG:Debug>:SPARS_DEBUG>
+    $<$<CONFIG:Release>:SPARS_RELEASE>
 )
 
-target_compile_options(ShaderParser PRIVATE
-if (MSVC)
-    $<$<CONFIG:Debug>:/Od /Zi>
-    $<$<CONFIG:Release>:/Ox>
- endif()
-)
+# MSVC-specific compile options
+    target_compile_options(ShaderParser PRIVATE
+        $<$<CONFIG:Debug>:/Od /Zi>
+        $<$<CONFIG:Release>:/Ox>
+    )

@@ -1,16 +1,29 @@
 #include "ShaderParser.h"
 #include <cctype>
 #include <string>
+#include <vector>
+#include "Token.h"
 
-namespace Twisted
+#include <expected>
+
+namespace spars
 {
-	inline bool IsDigit(char c) {
+	static inline bool IsDigit(char c)
+	{
 		return std::isdigit(static_cast<unsigned char>(c));
 	}
 
-	inline bool IsLetter(char c) {
+	static inline bool IsLetter(char c)
+	{
 		return (c >= 'A' && c <= 'Z') ||
 			(c >= 'a' && c <= 'z');
+	}
+
+	static inline const Token* getToken(const std::vector<Token>& tokens, size_t index)
+	{
+		if (index >= tokens.size())
+			return &tokens[index];
+		return nullptr;
 	}
 
 
@@ -57,7 +70,7 @@ namespace Twisted
 		return outStr;
 	}
 
-	std::vector<Token> ShaderParser::Tokenize(const std::string& str)
+	std::vector<Token> ShaderParser::Tokenize(const std::string& str)const
 	{
 		std::vector<Token> tokens;
 
@@ -99,11 +112,68 @@ namespace Twisted
 			else if (c == ' ' || c == '\n' || c == '\t')
 				emit(c, TokenType::EMPTY);
 			else if (IsDigit(c) || c == '.')
-				emit(c, TokenType::NUMBER);
+				emit(c, TokenType::DOT);
 			else if (IsLetter(c) || c == '_')
 				emit(c, TokenType::IDENTIFIER);
 		}
 
 		return tokens;
+	}
+
+	//auto ShaderParser::DetectGroups(const std::vector<Token>& tokens)const
+	//{
+		//std::expected<bool, std::vector<Group>> result;
+
+		//for (size_t i = 0; i < tokens.size(); ++i)
+		//{
+		//	const auto& startToken = tokens[i];
+		//	switch (startToken.Type)
+		//	{
+		//	case TokenType::HASHTAG:
+		//	{
+		//		GroupResult res = HandleHashTag(tokens, i);
+		//		if (!res)
+		//			return {};
+		//		result.emplace_back(res,);
+		//		break;
+		//	}
+		//	default:
+		//		break;
+		//		//we look for first and determine 
+		//	}
+		//}
+		//return result;
+
+	//}
+
+	GroupResult ShaderParser::HandleHashTag(const std::vector<Token>& tokens, size_t i)const
+	{
+		const Token* hashToken = getToken(tokens, i);
+		const Token* wordToken = getToken(tokens, i + 1);
+		if (!wordToken || wordToken->Type != TokenType::IDENTIFIER)
+			return  std::unexpected(false);
+
+		const Token* emptyToken = getToken(tokens, i + 2);
+		if (!emptyToken)
+			return  std::unexpected(false);
+
+		if (wordToken->Str == "include")
+		{
+			auto fileNameToken = getToken(tokens, i + 3);
+			auto dotToken = getToken(tokens, i + 4);
+			auto extToken = getToken(tokens, i + 5);
+			auto lastEmptyToken = getToken(tokens, i + 6);
+
+			if (!fileNameToken || !dotToken || !extToken || !lastEmptyToken)
+				return  std::unexpected(false);
+		}
+		else if (wordToken->Str == "use")
+		{
+			auto keyWordToken = getToken(tokens, i + 3);
+			auto lastEmptyToken = getToken(tokens, i + 4);
+
+			if (!keyWordToken || !lastEmptyToken)
+				return  std::unexpected(false);
+		}
 	}
 }
