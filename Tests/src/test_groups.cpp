@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "src/ShaderParser.h"
-#include "src/Token.h"
-#include "src/Group.h"
+#include "ShaderParser.h"
+#include "Token.h"
+#include "Group.h"
 
 inline const std::vector<spars::Token> tokens = {
 spars::Token{spars::TokenType::EMPTY,"\n"},
@@ -40,7 +40,6 @@ std::vector<spars::Group> expectedResult = {
 
 TEST(ShaderParserTests, GroupTest)
 {
-	spars::ShaderParser parser;
 	//auto groups=parser.DetectGroups(tokens);
 	//EXPECT_EQ(groups, expectedResult);
 }

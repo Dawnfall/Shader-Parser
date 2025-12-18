@@ -5,41 +5,81 @@
     "minor": 20,
     "patch": 0
   },
-  
   "configurePresets": [
     {
       "name": "vs",
+      "description": "Configure for Visual Studio",
       "generator": "Visual Studio 18 2026",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/build/vs-${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "SHADERPARSER_BUILD_SHARED": "OFF"
+      }
+    },
+    {
+      "name": "ninja",
+      "description": "Configure for Ninja (cross-platform)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ninja-${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "SHADERPARSER_BUILD_SHARED": "OFF"
       }
     }
   ],
-
   "buildPresets": [
     {
-      "name": "Debug",
+      "name": "vs-Debug",
       "configurePreset": "vs",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "description": "Build Debug (Visual Studio) with helpers enabled"
     },
     {
-      "name": "Release",
+      "name": "vs-Release",
       "configurePreset": "vs",
-      "configuration": "Release"
+      "configuration": "Release",
+      "description": "Build Release (Visual Studio) optimized"
+    },
+    {
+      "name": "ninja-Debug",
+      "configurePreset": "ninja",
+      "description": "Build Debug (Ninja) with helpers enabled"
+    },
+    {
+      "name": "ninja-Release",
+      "configurePreset": "ninja",
+      //"cacheVariables": {
+      //  "CMAKE_BUILD_TYPE": "Release"
+      //},
+      "description": "Build Release (Ninja) optimized"
     }
   ],
-
   "testPresets": [
     {
-      "name": "Debug",
+      "name": "vs-Debug",
       "configurePreset": "vs",
-      "configuration": "Debug"
+      "configuration": "Debug",
+      "description": "Run tests for Debug build (Visual Studio)"
     },
     {
-      "name": "Release",
+      "name": "vs-Release",
       "configurePreset": "vs",
-      "configuration": "Release"
+      "configuration": "Release",
+      "description": "Run tests for Release build (Visual Studio)"
+    },
+    {
+      "name": "ninja-Debug",
+      "configurePreset": "ninja",
+      "description": "Run tests for Debug build (Ninja)"
+    },
+    {
+      "name": "ninja-Release",
+      "configurePreset": "ninja",
+      //"cacheVariables": {
+      //  "CMAKE_BUILD_TYPE": "Release"
+      //},
+      "description": "Run tests for Release build (Ninja)"
     }
   ]
 }

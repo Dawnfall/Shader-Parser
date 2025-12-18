@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "src/ShaderParser.h"
-#include "src/Token.h"
+#include "ShaderParser.h"
+#include "Token.h"
 
 #include <string>
 #include <vector>
@@ -47,7 +47,6 @@ spars::Token{spars::TokenType::EMPTY,"\n"}
 
 TEST(ShaderPareserTests, TokenTest)
 {
-	spars::ShaderParser parser;
-	auto res = parser.Tokenize(testStr);
+	auto res = spars::internal::Tokenize(testStr);
 	EXPECT_EQ(expectedResult, res);
 }

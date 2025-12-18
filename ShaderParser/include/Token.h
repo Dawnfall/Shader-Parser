@@ -25,8 +25,8 @@ namespace spars
 
 	struct Token
 	{
-		TokenType Type;
-		std::string Str;
+		TokenType Type = TokenType::EMPTY;
+		std::string Str{};
 
 		auto operator<=>(const Token&) const = default;
 	};

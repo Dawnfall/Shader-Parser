@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "src/ShaderParser.h"
+#include "ShaderParser.h"
 
 #include <string>
 
@@ -26,7 +26,6 @@ void vert()
 
 TEST(ShaderParserTests, CommentsTest)
 {
-	spars::ShaderParser parser;
-	auto result = parser.RemoveComments(testStr);
+	auto result = spars::internal::RemoveComments(testStr);
 	EXPECT_EQ(testStr, testStr);
 }

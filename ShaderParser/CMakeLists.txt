@@ -1,41 +1,33 @@
 cmake_minimum_required(VERSION 3.20)
+project(ShaderParser 
+VERSION 0.1
+LANGUAGES CXX)
 
-file(GLOB_RECURSE SHADER_PARSER_SOURCES CONFIGURE_DEPENDS
-    "*.cpp"
-    "*.h"
+# Create library
+option(SHADERPARSER_BUILD_SHARED "Build ShaderParser as a shared library" OFF)
+
+if(SHADERPARSER_BUILD_SHARED)
+    set(LIB_TYPE SHARED)
+else()
+    set(LIB_TYPE STATIC)
+endif()
+
+add_library(ShaderParser ${LIB_TYPE}
+    src/ShaderParser.cpp
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SHADER_PARSER_SOURCES})
-
-# Create shared library
-add_library(ShaderParser SHARED ${SHADER_PARSER_SOURCES})
-
-# Set C++ standard
-set_target_properties(ShaderParser PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-
-    # Force DLL and import library into a predictable folder
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>
+# Include headers
+target_include_directories(ShaderParser
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Include directories
-target_include_directories(ShaderParser PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
+# Add this after creating your target
+target_compile_options(ShaderParser
+    PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>          # MSVC: warning level 4 + warnings as errors
+        $<$<CXX_COMPILER_ID:GNU>:-Wall -Werror>    # GCC
+        $<$<CXX_COMPILER_ID:Clang>:-Wall -Werror>  # Clang
 )
 
-# Compile definitions
-target_compile_definitions(ShaderParser PRIVATE
-    SHADER_PARSER
-    $<$<CONFIG:Debug>:SPARS_DEBUG>
-    $<$<CONFIG:Release>:SPARS_RELEASE>
-)
-
-# MSVC-specific compile options
-    target_compile_options(ShaderParser PRIVATE
-        $<$<CONFIG:Debug>:/Od /Zi>
-        $<$<CONFIG:Release>:/Ox>
-    )
+target_compile_features(ShaderParser PUBLIC cxx_std_20)

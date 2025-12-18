@@ -1,33 +1,33 @@
 #include "ShaderParser.h"
-#include <cctype>
+#include "Token.h"
+#include "Core.h"
+#include "Helper.h"
+#include "ParserConstants.h"
+
 #include <string>
 #include <vector>
-#include "Token.h"
-
 #include <expected>
 
 namespace spars
 {
-	static inline bool IsDigit(char c)
+	ParsedShader SPARS_API ParseShader(const std::string& shaderText)
 	{
-		return std::isdigit(static_cast<unsigned char>(c));
+		ParsedShader parsedShader;
+		parsedShader.VertexShader = shaderText;
+
+		return parsedShader; //TODO...
 	}
 
-	static inline bool IsLetter(char c)
+	std::vector<Token> internal::RemoveEmpty(const std::vector<Token>& tokens)
 	{
-		return (c >= 'A' && c <= 'Z') ||
-			(c >= 'a' && c <= 'z');
+		std::vector<Token> filteredResult;
+		for (const auto& token : tokens)
+			if (token.Type != TokenType::EMPTY)
+				filteredResult.emplace_back(token);
+		return filteredResult;
 	}
 
-	static inline const Token* getToken(const std::vector<Token>& tokens, size_t index)
-	{
-		if (index >= tokens.size())
-			return &tokens[index];
-		return nullptr;
-	}
-
-
-	std::string ShaderParser::RemoveComments(const std::string& str)const
+	std::string internal::RemoveComments(const std::string& str)
 	{
 		std::string outStr;
 
@@ -70,7 +70,7 @@ namespace spars
 		return outStr;
 	}
 
-	std::vector<Token> ShaderParser::Tokenize(const std::string& str)const
+	std::vector<Token> internal::Tokenize(const std::string& str)
 	{
 		std::vector<Token> tokens;
 
@@ -146,9 +146,11 @@ namespace spars
 
 	//}
 
-	GroupResult ShaderParser::HandleHashTag(const std::vector<Token>& tokens, size_t i)const
+	GroupResult internal::HandleHashTag(const std::vector<Token>& tokens, size_t i)
 	{
 		const Token* hashToken = getToken(tokens, i);
+		if (!hashToken)
+			return std::unexpected(false);
 		const Token* wordToken = getToken(tokens, i + 1);
 		if (!wordToken || wordToken->Type != TokenType::IDENTIFIER)
 			return  std::unexpected(false);
@@ -175,5 +177,31 @@ namespace spars
 			if (!keyWordToken || !lastEmptyToken)
 				return  std::unexpected(false);
 		}
+
+		return GroupResult{};
 	}
+
+
+	//std::string internal::ReplaceUseLine(const std::string& input)
+	//{
+		//size_t startPos = detectWord(Constants::SHADER_USE_KEYWORD, input, 0);
+		//if (startPos == std::string::npos)
+		//	return input;
+
+		//while (std::getline(ss, line))
+		//{
+		//	if (line.rfind("#USE", 0) == 0)
+		//	{
+		//		out += replacement + "\n";
+		//	}
+		//	else
+		//	{
+		//		out += line + "\n";
+		//	}
+		//}
+		//return out;
+
+	//	return "";
+	//}
+
 }

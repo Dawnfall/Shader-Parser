@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
-project(ShaderParserProject)
 
-# Let each subdirectory define its own targets.
+project(ShaderParserRoot LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
+
 add_subdirectory(ShaderParser)
 add_subdirectory(Tests)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ShaderParserTests)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT Tests)
